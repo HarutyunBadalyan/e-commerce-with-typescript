@@ -35,12 +35,28 @@ const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 const express_1 = __importDefault(require("express"));
 const registerroute_1 = __importDefault(require("./routes/registerroute"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const express_session_1 = __importDefault(require("express-session"));
 const encodedecodetoken_1 = require("./helpers/encodedecodetoken");
 const models_1 = require("./database/models");
+const loginroute_1 = __importDefault(require("./routes/loginroute"));
 const app = (0, express_1.default)();
 const PORT = Number(process.env.PORT) || 3000;
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+app.use((0, cookie_parser_1.default)());
+const oneDay = 1000 * 60 * 60 * 24;
+app.use((0, express_session_1.default)({
+    secret: 'thisismysecrctekeyfhrgfgrfrty84fwir767',
+    saveUninitialized: true,
+    cookie: { maxAge: oneDay, secure: true },
+    //name: 'sdfsdfsd', // name of cookie
+    resave: false,
+}));
+app.get("/", (req, res) => {
+    console.log(req.session);
+    res.send("hi");
+});
 app.get("/token/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const decodedData = encodedecodetoken_1.TokenEncodeDecode.decodeToken(req.params.id);
@@ -59,4 +75,5 @@ app.get("/token/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 }));
 app.use("/", registerroute_1.default);
+app.use("/", loginroute_1.default);
 app.listen(PORT, () => console.log(`app listen localhost:${PORT}`));
