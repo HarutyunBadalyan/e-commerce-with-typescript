@@ -29,13 +29,29 @@ productRoute.post('/products', (req, res) => __awaiter(void 0, void 0, void 0, f
             code: +req.body.code,
             quantity: req.body.quantity
         });
-        res.send("success");
+        res.send({ msg: "success" });
     }
     catch (err) {
         console.log(err);
         if (err.name) {
             return res.send({ msg: "this product already exist. do you want update this product ? " });
         }
+        res.send({ msg: err });
+    }
+}));
+productRoute.delete('/products', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log("Sessionproduct", req.session);
+        const admin = yield models_1.Customer.findOne({ raw: true, where: { id: req.session.userId } });
+        if (!admin.isAdmin) {
+            throw "you cannot delete product";
+        }
+        const product = yield models_1.Product.destroy({ where: { name: req.body.name } });
+        console.log(product);
+        res.send({ msg: "success" });
+    }
+    catch (err) {
+        console.log(err);
         res.send({ msg: err });
     }
 }));

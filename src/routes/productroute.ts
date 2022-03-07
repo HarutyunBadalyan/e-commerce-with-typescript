@@ -31,5 +31,22 @@ productRoute.post('/products', async (req: Request, res: Response) => {
     }
 
 });
+productRoute.delete('/products', async (req: Request, res: Response) => {
+    try {
+        console.log("Sessionproduct",req.session)
+        const admin: any  =  await Customer.findOne({raw:true, where:{ id: req.session.userId}});
+        if(!admin.isAdmin) {
+            throw "you cannot delete product";
+
+        }
+       const product = await Product.destroy({where: {name: req.body.name}})
+       console.log(product)
+       res.send({msg:"success"});
+    } catch(err:any) {
+        console.log(err)
+        res.send({msg: err});
+    }
+
+});
 
 export default productRoute;
