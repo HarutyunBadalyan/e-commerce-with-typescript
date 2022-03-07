@@ -32,9 +32,11 @@ registerRoute.post('/register', registerValidations, async (req:Request, res:Res
         res.send("success");
     } catch(err:any) {
         
-        console.log("errors register",err.errors);
-       
-        res.send( err.errors.map((item:any) => item.msg)) //sending error array or string
+        console.log("errors register",err);
+       if(!err.name) {
+        return res.send( err.errors.map((item:any) => item.msg)) //sending error array or string
+       }
+       return res.send("Please use another email");
     }
     
 
