@@ -55,4 +55,17 @@ productRoute.delete('/products', (req, res) => __awaiter(void 0, void 0, void 0,
         res.send({ msg: err });
     }
 }));
+productRoute.get('/products', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const allProducts = yield models_1.Product.findAll({
+            raw: true
+        });
+        console.log(allProducts);
+        res.send({ msg: allProducts });
+    }
+    catch (err) {
+        console.log(err);
+        res.send({ msg: err });
+    }
+}));
 exports.default = productRoute;

@@ -48,5 +48,19 @@ productRoute.delete('/products', async (req: Request, res: Response) => {
     }
 
 });
+productRoute.get('/products', async (req: Request, res: Response) => {
+    try {
+       const allProducts = await Product.findAll({
+        raw:true
+      });
+      
+       console.log(allProducts)
+       res.send({msg: allProducts})
+    } catch(err:any) {
+        console.log(err)
+        res.send({msg: err});
+    }
+
+});
 
 export default productRoute;
