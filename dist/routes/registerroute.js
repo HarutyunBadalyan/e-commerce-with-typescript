@@ -38,14 +38,14 @@ registerRoute.post('/register', registervalidationmiddlewares_1.default, (req, r
         console.log(customer);
         const sentemail = yield sendmail_1.SendMail.sendEmail(req.body.email, "autenticated", "dsfsdf", `<a href="${url_1.default.resolve(process.env.BASEURL || "http://localhost:3000/", `/token/${token}`)}">click for authentication<a>`);
         //console.log("asdasd",sentemail)
-        res.send("success");
+        res.send({ msg: "success" });
     }
     catch (err) {
         console.log("errors register", err);
         if (!err.name) {
-            return res.send(err.errors.map((item) => item.msg)); //sending error array or string
+            return res.send({ msg: err.errors.map((item) => item.msg) }); //sending error array or string
         }
-        return res.send("Please use another email");
+        return res.send({ msg: "Please use another email" });
     }
 }));
 exports.default = registerRoute;

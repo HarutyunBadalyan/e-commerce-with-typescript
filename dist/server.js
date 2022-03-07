@@ -54,10 +54,6 @@ app.use((0, express_session_1.default)({
     //name: 'connectid', // name of cookie
     resave: false,
 }));
-app.get("/", (req, res) => {
-    console.log(req.session);
-    res.send("hi");
-});
 app.get("/token/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const decodedData = encodedecodetoken_1.TokenEncodeDecode.decodeToken(req.params.id);
