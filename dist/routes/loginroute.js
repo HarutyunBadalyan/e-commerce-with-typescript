@@ -31,7 +31,7 @@ loginRoute.post("/login", loginvalidationmiddlewares_1.default, (req, res) => __
         }
         const match = yield hashandcomparepassword_1.HashAndComparePassword.comparePassword(req.body.password, customer.password);
         req.session.userId = customer.id;
-        console.log(req.session.userId);
+        console.log("Session", req.session);
         res.send("success");
     }
     catch (err) {

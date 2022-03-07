@@ -18,8 +18,8 @@ loginRoute.post("/login",loginValidations, async (req:Request, res:Response) => 
             throw "Invalid email or password"
         }
         const match = await HashAndComparePassword.comparePassword(req.body.password, customer.password);
-        req.session!.userId = customer.id;
-        console.log(req.session!.userId)
+        req.session.userId = customer.id;
+        console.log("Session",req.session)
         res.send("success")
 
     } catch(err: any) {

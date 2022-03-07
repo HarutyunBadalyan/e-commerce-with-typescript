@@ -9,6 +9,7 @@ import sessions from 'express-session';
 import {TokenEncodeDecode} from "./helpers/encodedecodetoken"
 import { Customer } from "./database/models";
 import loginRoute from "./routes/loginroute";
+import productRoute from "./routes/productroute";
 
 const app:Application = express();
 
@@ -24,8 +25,8 @@ app.use(
     sessions({
         secret: 'thisismysecrctekeyfhrgfgrfrty84fwir767',
         saveUninitialized: true,
-        cookie: { maxAge: oneDay, secure: true },
-        //name: 'sdfsdfsd', // name of cookie
+        cookie: { maxAge: oneDay,  },
+        //name: 'connectid', // name of cookie
         resave: false,
     })
 );
@@ -52,8 +53,7 @@ app.get("/token/:id", async (req:Request, res:Response) => {
 
 app.use("/",registerRoute);
 app.use("/", loginRoute);
-
-
+app.use("/", productRoute)
 
 
 app.listen(PORT, () => console.log(`app listen localhost:${PORT}`));

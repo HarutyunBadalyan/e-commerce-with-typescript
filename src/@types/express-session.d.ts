@@ -5,7 +5,7 @@
 //     userId:  string
 //   }
 // }
-import { Session } from 'express-session'
+import {Session} from 'express-session'
 
 declare module 'express-session' {
  export interface SessionData {
