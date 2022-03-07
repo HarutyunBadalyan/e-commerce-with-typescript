@@ -41,8 +41,11 @@ registerRoute.post('/register', registervalidationmiddlewares_1.default, (req, r
         res.send("success");
     }
     catch (err) {
-        console.log("errors register", err.errors);
-        res.send(err.errors.map((item) => item.msg)); //sending error array or string
+        console.log("errors register", err);
+        if (!err.name) {
+            return res.send(err.errors.map((item) => item.msg)); //sending error array or string
+        }
+        return res.send("Please use another email");
     }
 }));
 exports.default = registerRoute;

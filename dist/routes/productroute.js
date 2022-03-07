@@ -22,11 +22,20 @@ productRoute.post('/products', (req, res) => __awaiter(void 0, void 0, void 0, f
         if (!admin.isAdmin) {
             throw "you cannot add product";
         }
-        const product = yield models_1.Product.create({ name: req.body.name, price: +req.body.price, description: req.body.description });
+        const product = yield models_1.Product.create({
+            name: req.body.name,
+            price: +req.body.price,
+            description: req.body.description,
+            code: +req.body.code,
+            quantity: req.body.quantity
+        });
         res.send("success");
     }
     catch (err) {
         console.log(err);
+        if (err.name) {
+            return res.send({ msg: "this product already exist. do you want update this product ? " });
+        }
         res.send({ msg: err });
     }
 }));

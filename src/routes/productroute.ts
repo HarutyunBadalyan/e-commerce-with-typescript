@@ -13,10 +13,20 @@ productRoute.post('/products', async (req: Request, res: Response) => {
             throw "you cannot add product";
 
         }
-       const product = await Product.create({name: req.body.name, price:+req.body.price, description: req.body.description })
+       const product = await Product.create(
+           {
+           name: req.body.name, 
+           price:+req.body.price,
+           description: req.body.description,
+           code: +req.body.code,
+           quantity:req.body.quantity
+        })
        res.send("success");
     } catch(err:any) {
         console.log(err)
+        if(err.name) {
+            return res.send({msg: "this product already exist. do you want update this product ? "})
+        }
         res.send({msg: err});
     }
 
