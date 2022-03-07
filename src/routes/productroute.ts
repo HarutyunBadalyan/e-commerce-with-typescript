@@ -21,7 +21,7 @@ productRoute.post('/products', async (req: Request, res: Response) => {
            code: +req.body.code,
            quantity:req.body.quantity
         })
-       res.send("success");
+       res.send({msg:"success"});
     } catch(err:any) {
         console.log(err)
         if(err.name) {

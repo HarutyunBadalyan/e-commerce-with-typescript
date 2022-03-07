@@ -20,14 +20,14 @@ loginRoute.post("/login",loginValidations, async (req:Request, res:Response) => 
         const match = await HashAndComparePassword.comparePassword(req.body.password, customer.password);
         req.session.userId = customer.id;
         console.log("Session",req.session)
-        res.send("success")
+        res.send({msg: "success" })
 
     } catch(err: any) {
         if(Array.isArray(err.errors)) {
-         return   res.send(err);
+         return   res.send({msg: err});
 
         }
-        return res.send(err);
+        return res.send({msg: err });
     }
 
 })

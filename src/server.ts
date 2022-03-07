@@ -30,10 +30,7 @@ app.use(
         resave: false,
     })
 );
-app.get("/", (req:Request, res:Response) => {
- console.log(req.session) 
- res.send("hi")
-});
+
 app.get("/token/:id", async (req:Request, res:Response) => {
     try {
         const decodedData:any = TokenEncodeDecode.decodeToken(req.params.id);
