@@ -31,6 +31,39 @@ productRoute.post('/products', async (req: Request, res: Response) => {
     }
 
 });
+productRoute.put('/products', async (req: Request, res: Response) => {
+    try {
+        console.log("Sessionproduct",req.session)
+        const admin: any  =  await Customer.findOne({raw:true, where:{ id: req.session.userId}});
+        if(!admin.isAdmin) {
+            throw "you cannot update product";
+
+        }
+      const product:any = await Product.findOne({raw: true, where: {
+          name: req.body.name
+      }})
+      let newquantity: number = +req.body.quantity
+      const updatedProduct = await Product.update({
+          code: req.body.code || product.code,
+          price: req.body.price || product.price,
+          quantity: req.body.quantity ? newquantity += product.quantity:product.quantity,
+          description: req.body.description
+
+       }, {
+        where: {
+          name: req.body.name
+        }
+      });
+       res.send({msg:"success"});
+    } catch(err:any) {
+        console.log(err)
+        if(err.name) {
+            return res.send({msg: err.errors[0].message})
+        }
+        res.send({msg: err});
+    }
+
+});
 productRoute.delete('/products', async (req: Request, res: Response) => {
     try {
         console.log("Sessionproduct",req.session)

@@ -39,6 +39,37 @@ productRoute.post('/products', (req, res) => __awaiter(void 0, void 0, void 0, f
         res.send({ msg: err });
     }
 }));
+productRoute.put('/products', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log("Sessionproduct", req.session);
+        const admin = yield models_1.Customer.findOne({ raw: true, where: { id: req.session.userId } });
+        if (!admin.isAdmin) {
+            throw "you cannot update product";
+        }
+        const product = yield models_1.Product.findOne({ raw: true, where: {
+                name: req.body.name
+            } });
+        let newquantity = +req.body.quantity;
+        const updatedProduct = yield models_1.Product.update({
+            code: req.body.code || product.code,
+            price: req.body.price || product.price,
+            quantity: req.body.quantity ? newquantity += product.quantity : product.quantity,
+            description: req.body.description
+        }, {
+            where: {
+                name: req.body.name
+            }
+        });
+        res.send({ msg: "success" });
+    }
+    catch (err) {
+        console.log(err);
+        if (err.name) {
+            return res.send({ msg: err.errors[0].message });
+        }
+        res.send({ msg: err });
+    }
+}));
 productRoute.delete('/products', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("Sessionproduct", req.session);
