@@ -22,6 +22,9 @@ const buyProductRoute = express_1.default.Router();
 buyProductRoute.post("/buyproduct", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let transaction;
     try {
+        if (!req.session.userId) {
+            throw "you can't buy";
+        }
         let sum = 0;
         const products = yield models_1.Product.findAll({
             raw: true,
@@ -64,7 +67,12 @@ buyProductRoute.post("/buyproduct", (req, res) => __awaiter(void 0, void 0, void
         const customer = yield models_1.Customer.findOne({ raw: true, where: { id: req.session.userId } });
         yield transaction.commit();
         console.log(buyedProductTotalSum);
-        yield sendmail_1.SendMail.sendEmail(customer.email, "buyedProducts", "", `<pre>${JSON.stringify(req.body.products)} totalsum ${buyedProductTotalSum}</pre>`);
+        let arr = products.map((item) => {
+            if (req.body.products[req.body.products.findIndex((elem) => elem.name === item.name)]) {
+                return { price: item.price, quantity: req.body.products[req.body.products.findIndex((elem) => elem.name === item.name)].quantity, name: item.name };
+            }
+        });
+        yield sendmail_1.SendMail.sendEmail(customer.email, "buyedProducts", "", `<pre>${JSON.stringify(arr)} totalsum ${buyedProductTotalSum}</pre>`);
         res.send({ msg: "success" });
     }
     catch (err) {

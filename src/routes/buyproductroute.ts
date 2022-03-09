@@ -14,6 +14,9 @@ buyProductRoute.post("/buyproduct", async (req: Request, res: Response) => {
      
     let transaction:any;
     try {
+        if(!req.session.userId) {
+            throw "you can't buy"
+        }
         let sum:number = 0;
         const products:any = await  Product.findAll({
             raw:true,
@@ -58,7 +61,12 @@ buyProductRoute.post("/buyproduct", async (req: Request, res: Response) => {
     const customer:any = await Customer.findOne({raw:true, where:{ id: req.session.userId}})
     await transaction.commit();
     console.log(buyedProductTotalSum)
-    await SendMail.sendEmail(customer.email,"buyedProducts","",`<pre>${JSON.stringify(req.body.products)} totalsum ${buyedProductTotalSum}</pre>` )
+    let arr = products.map((item:any) => {
+        if(req.body.products[req.body.products.findIndex((elem:any) => elem.name ===  item.name)]) {
+            return {price: item.price, quantity:req.body.products[req.body.products.findIndex((elem:any) => elem.name ===  item.name)].quantity, name:item.name }
+        }
+    })
+    await SendMail.sendEmail(customer.email,"buyedProducts","",`<pre>${JSON.stringify(arr)} totalsum ${buyedProductTotalSum}</pre>` )
     res.send({msg: "success"});
     } catch(err: any) {
         console.log(err);
