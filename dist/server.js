@@ -41,6 +41,7 @@ const encodedecodetoken_1 = require("./helpers/encodedecodetoken");
 const models_1 = require("./database/models");
 const loginroute_1 = __importDefault(require("./routes/loginroute"));
 const productroute_1 = __importDefault(require("./routes/productroute"));
+const buyproductroute_1 = __importDefault(require("./routes/buyproductroute"));
 const app = (0, express_1.default)();
 const PORT = Number(process.env.PORT) || 3000;
 app.use(express_1.default.json());
@@ -74,4 +75,5 @@ app.get("/token/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* 
 app.use("/", registerroute_1.default);
 app.use("/", loginroute_1.default);
 app.use("/", productroute_1.default);
+app.use("/", buyproductroute_1.default);
 app.listen(PORT, () => console.log(`app listen localhost:${PORT}`));

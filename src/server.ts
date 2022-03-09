@@ -10,6 +10,7 @@ import {TokenEncodeDecode} from "./helpers/encodedecodetoken"
 import { Customer } from "./database/models";
 import loginRoute from "./routes/loginroute";
 import productRoute from "./routes/productroute";
+import buyProductRoute from "./routes/buyproductroute";
 
 const app:Application = express();
 
@@ -51,6 +52,6 @@ app.get("/token/:id", async (req:Request, res:Response) => {
 app.use("/",registerRoute);
 app.use("/", loginRoute);
 app.use("/", productRoute)
-
+app.use("/", buyProductRoute);
 
 app.listen(PORT, () => console.log(`app listen localhost:${PORT}`));
