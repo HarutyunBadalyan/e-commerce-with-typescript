@@ -60,10 +60,8 @@ buyProductRoute.post("/buyproduct", async (req: Request, res: Response) => {
         }
     })
     await SendMail.sendEmail(customer.email,"buyedProducts","",`<pre>${JSON.stringify(arr)} totalsum ${buyedProductTotalSum}</pre>` )
-    promiseArray = [];
     res.send({msg: "success"});
-    } catch(err: any) {
-        promiseArray = [];
+    } catch(err: any) { 
         console.log(err);
         if(transaction) {
             await transaction.rollback();

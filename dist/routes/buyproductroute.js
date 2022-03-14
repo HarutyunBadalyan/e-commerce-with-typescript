@@ -65,11 +65,9 @@ buyProductRoute.post("/buyproduct", (req, res) => __awaiter(void 0, void 0, void
             }
         });
         yield sendmail_1.SendMail.sendEmail(customer.email, "buyedProducts", "", `<pre>${JSON.stringify(arr)} totalsum ${buyedProductTotalSum}</pre>`);
-        promiseArray = [];
         res.send({ msg: "success" });
     }
     catch (err) {
-        promiseArray = [];
         console.log(err);
         if (transaction) {
             yield transaction.rollback();
