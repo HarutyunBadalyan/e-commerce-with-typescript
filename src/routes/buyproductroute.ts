@@ -5,9 +5,6 @@ import { Customer, db, CustomerBalanceslogs, Product } from "../database/models"
 import { SendMail } from "../helpers/sendmail";
 
 const buyProductRoute = express.Router();
-// Product.update({quantity: 3}, {where:{ name:"apple"}}).then(r => console.log(r)).catch(e => {
-//     console.error(e)
-// })
 
 buyProductRoute.post("/buyproduct", async (req: Request, res: Response) => {
    
@@ -25,8 +22,6 @@ buyProductRoute.post("/buyproduct", async (req: Request, res: Response) => {
             }
           })
           products.forEach( (item:any) => {
-            //await Product.update({quantity: item.quantity - Number(req.body.products[req.body.products.findIndex((elem:any) => elem.name === item.name)].quantity)}, {where:{ name:item.name},transaction })
-              //console.log("product item",item.price, req.body.products[req.body.products.findIndex((elem:any) => elem.name === item.name)] )
               sum += Number(item.price) * Number(req.body.products[req.body.products.findIndex((elem:any) => elem.name === item.name)].quantity)
           })
     transaction = await db.sequelize.transaction();
@@ -50,13 +45,9 @@ buyProductRoute.post("/buyproduct", async (req: Request, res: Response) => {
     }
     console.log(totalsum)
     for( let i = 0; i < products.length; i++){
-        try {
-        await Product.update({quantity: products[i].quantity - Number(req.body.products[req.body.products.findIndex((elem:any) => elem.name ===  products[i].name)].quantity)}, {where:{ name: products[i].name},transaction })
         
-          
-        } catch(err:any) {
-           throw err;
-        }
+        await Product.update({quantity: products[i].quantity - Number(req.body.products[req.body.products.findIndex((elem:any) => elem.name ===  products[i].name)].quantity)}, {where:{ name: products[i].name},transaction })
+      
     }
     const customer:any = await Customer.findOne({raw:true, where:{ id: req.session.userId}})
     await transaction.commit();

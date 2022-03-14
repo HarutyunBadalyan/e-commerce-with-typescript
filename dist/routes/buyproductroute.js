@@ -16,9 +16,6 @@ const express_1 = __importDefault(require("express"));
 const models_1 = require("../database/models");
 const sendmail_1 = require("../helpers/sendmail");
 const buyProductRoute = express_1.default.Router();
-// Product.update({quantity: 3}, {where:{ name:"apple"}}).then(r => console.log(r)).catch(e => {
-//     console.error(e)
-// })
 buyProductRoute.post("/buyproduct", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let transaction;
     try {
@@ -33,8 +30,6 @@ buyProductRoute.post("/buyproduct", (req, res) => __awaiter(void 0, void 0, void
             }
         });
         products.forEach((item) => {
-            //await Product.update({quantity: item.quantity - Number(req.body.products[req.body.products.findIndex((elem:any) => elem.name === item.name)].quantity)}, {where:{ name:item.name},transaction })
-            //console.log("product item",item.price, req.body.products[req.body.products.findIndex((elem:any) => elem.name === item.name)] )
             sum += Number(item.price) * Number(req.body.products[req.body.products.findIndex((elem) => elem.name === item.name)].quantity);
         });
         transaction = yield models_1.db.sequelize.transaction();
@@ -57,12 +52,7 @@ buyProductRoute.post("/buyproduct", (req, res) => __awaiter(void 0, void 0, void
         }
         console.log(totalsum);
         for (let i = 0; i < products.length; i++) {
-            try {
-                yield models_1.Product.update({ quantity: products[i].quantity - Number(req.body.products[req.body.products.findIndex((elem) => elem.name === products[i].name)].quantity) }, { where: { name: products[i].name }, transaction });
-            }
-            catch (err) {
-                throw err;
-            }
+            yield models_1.Product.update({ quantity: products[i].quantity - Number(req.body.products[req.body.products.findIndex((elem) => elem.name === products[i].name)].quantity) }, { where: { name: products[i].name }, transaction });
         }
         const customer = yield models_1.Customer.findOne({ raw: true, where: { id: req.session.userId } });
         yield transaction.commit();
