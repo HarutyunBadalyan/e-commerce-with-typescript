@@ -18,7 +18,7 @@ registerRoute.post('/register', registerValidations, async (req:Request, res:Res
         if(!errors.isEmpty()) {
             throw errors;
         }
-        const token = await TokenEncodeDecode.encodeToken(req.body.email);
+        const token =  TokenEncodeDecode.encodeToken(req.body.email);
         const hashedPassword = await HashAndComparePassword.hashPassword(req.body.password);
         const customer = await Customer.create({
             email:req.body.email,

@@ -27,7 +27,7 @@ registerRoute.post('/register', registervalidationmiddlewares_1.default, (req, r
         if (!errors.isEmpty()) {
             throw errors;
         }
-        const token = yield encodedecodetoken_1.TokenEncodeDecode.encodeToken(req.body.email);
+        const token = encodedecodetoken_1.TokenEncodeDecode.encodeToken(req.body.email);
         const hashedPassword = yield hashandcomparepassword_1.HashAndComparePassword.hashPassword(req.body.password);
         const customer = yield models_1.Customer.create({
             email: req.body.email,
