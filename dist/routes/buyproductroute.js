@@ -17,6 +17,7 @@ const models_1 = require("../database/models");
 const sendmail_1 = require("../helpers/sendmail");
 const buyProductRoute = express_1.default.Router();
 buyProductRoute.post("/buyproduct", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let promiseArray = [];
     let transaction;
     try {
         if (!req.session.userId) {
@@ -52,8 +53,9 @@ buyProductRoute.post("/buyproduct", (req, res) => __awaiter(void 0, void 0, void
         }
         console.log(totalsum);
         for (let i = 0; i < products.length; i++) {
-            yield models_1.Product.update({ quantity: products[i].quantity - Number(req.body.products[req.body.products.findIndex((elem) => elem.name === products[i].name)].quantity) }, { where: { name: products[i].name }, transaction });
+            promiseArray.push(models_1.Product.update({ quantity: products[i].quantity - Number(req.body.products[req.body.products.findIndex((elem) => elem.name === products[i].name)].quantity) }, { where: { name: products[i].name }, transaction }));
         }
+        const responseOfUpdateProducts = yield Promise.all(promiseArray);
         const customer = yield models_1.Customer.findOne({ raw: true, where: { id: req.session.userId } });
         yield transaction.commit();
         console.log(buyedProductTotalSum);
@@ -63,9 +65,11 @@ buyProductRoute.post("/buyproduct", (req, res) => __awaiter(void 0, void 0, void
             }
         });
         yield sendmail_1.SendMail.sendEmail(customer.email, "buyedProducts", "", `<pre>${JSON.stringify(arr)} totalsum ${buyedProductTotalSum}</pre>`);
+        promiseArray = [];
         res.send({ msg: "success" });
     }
     catch (err) {
+        promiseArray = [];
         console.log(err);
         if (transaction) {
             yield transaction.rollback();

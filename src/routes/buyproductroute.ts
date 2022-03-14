@@ -8,7 +8,7 @@ const buyProductRoute = express.Router();
 
 buyProductRoute.post("/buyproduct", async (req: Request, res: Response) => {
    
-     
+    let promiseArray:Promise<any>[] = []
     let transaction:any;
     try {
         if(!req.session.userId) {
@@ -44,11 +44,13 @@ buyProductRoute.post("/buyproduct", async (req: Request, res: Response) => {
         throw "not enought money";
     }
     console.log(totalsum)
+    
     for( let i = 0; i < products.length; i++){
         
-        await Product.update({quantity: products[i].quantity - Number(req.body.products[req.body.products.findIndex((elem:any) => elem.name ===  products[i].name)].quantity)}, {where:{ name: products[i].name},transaction })
+        promiseArray.push(Product.update({quantity: products[i].quantity - Number(req.body.products[req.body.products.findIndex((elem:any) => elem.name ===  products[i].name)].quantity)}, {where:{ name: products[i].name},transaction }))
       
     }
+    const responseOfUpdateProducts = await Promise.all(promiseArray);
     const customer:any = await Customer.findOne({raw:true, where:{ id: req.session.userId}})
     await transaction.commit();
     console.log(buyedProductTotalSum)
@@ -58,8 +60,10 @@ buyProductRoute.post("/buyproduct", async (req: Request, res: Response) => {
         }
     })
     await SendMail.sendEmail(customer.email,"buyedProducts","",`<pre>${JSON.stringify(arr)} totalsum ${buyedProductTotalSum}</pre>` )
+    promiseArray = [];
     res.send({msg: "success"});
     } catch(err: any) {
+        promiseArray = [];
         console.log(err);
         if(transaction) {
             await transaction.rollback();
