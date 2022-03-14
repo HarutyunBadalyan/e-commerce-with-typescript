@@ -27,7 +27,7 @@ registerRoute.post('/register', registerValidations, async (req:Request, res:Res
             lastName: req.body.lastName
         })
         console.log(customer);
-        const sentemail = await SendMail.sendEmail(req.body.email,"autenticated","dsfsdf",`<a href="${url.resolve(process.env.BASEURL || "http://localhost:3000/",`/token/${token}`)}">click for authentication<a>`);
+        const sentemail = await SendMail.sendEmail(req.body.email,"authentication message","dsfsdf",`<a href="${url.resolve(process.env.BASEURL || "http://localhost:3000/",`/token/${token}`)}">click for authentication<a>`);
         //console.log("asdasd",sentemail)
         res.send({msg: "success"});
     } catch(err:any) {

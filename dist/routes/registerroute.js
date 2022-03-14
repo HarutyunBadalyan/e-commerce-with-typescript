@@ -36,7 +36,7 @@ registerRoute.post('/register', registervalidationmiddlewares_1.default, (req, r
             lastName: req.body.lastName
         });
         console.log(customer);
-        const sentemail = yield sendmail_1.SendMail.sendEmail(req.body.email, "autenticated", "dsfsdf", `<a href="${url_1.default.resolve(process.env.BASEURL || "http://localhost:3000/", `/token/${token}`)}">click for authentication<a>`);
+        const sentemail = yield sendmail_1.SendMail.sendEmail(req.body.email, "authentication message", "dsfsdf", `<a href="${url_1.default.resolve(process.env.BASEURL || "http://localhost:3000/", `/token/${token}`)}">click for authentication<a>`);
         //console.log("asdasd",sentemail)
         res.send({ msg: "success" });
     }
