@@ -16,6 +16,14 @@ const express_1 = __importDefault(require("express"));
 const models_1 = require("../database/models");
 const sendmail_1 = require("../helpers/sendmail");
 const buyProductRoute = express_1.default.Router();
+buyProductRoute.get("/buyproduct", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.session.userId) {
+        return res.redirect("/login");
+    }
+    const customer = yield models_1.Customer.findOne({ raw: true, where: { id: req.session.userId } });
+    const { firstName, lastName, email } = customer;
+    res.send({ firstName, lastName, email });
+}));
 buyProductRoute.post("/buyproduct", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let promiseArray = [];
     let transaction;

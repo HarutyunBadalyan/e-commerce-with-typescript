@@ -42,6 +42,7 @@ const models_1 = require("./database/models");
 const loginroute_1 = __importDefault(require("./routes/loginroute"));
 const productroute_1 = __importDefault(require("./routes/productroute"));
 const buyproductroute_1 = __importDefault(require("./routes/buyproductroute"));
+const profileroute_1 = __importDefault(require("./routes/profileroute"));
 const app = (0, express_1.default)();
 const PORT = Number(process.env.PORT) || 3000;
 app.use(express_1.default.json());
@@ -76,4 +77,13 @@ app.use("/", registerroute_1.default);
 app.use("/", loginroute_1.default);
 app.use("/", productroute_1.default);
 app.use("/", buyproductroute_1.default);
+app.use("/", profileroute_1.default);
+app.post("/logout", (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.send({ msg: "error" });
+        }
+        return res.send({ msg: "success" });
+    });
+});
 app.listen(PORT, () => console.log(`app listen localhost:${PORT}`));

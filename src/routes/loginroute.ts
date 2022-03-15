@@ -5,7 +5,13 @@ import { Customer } from "../database/models";
 import { HashAndComparePassword } from "../helpers/hashandcomparepassword";
 
 const loginRoute = express.Router();
-
+loginRoute.get("/login",loginValidations, async (req:Request, res:Response, next: NextFunction) => {
+    console.log(req.session)
+    if(req.session.userId) {
+        return res.redirect("/profile")
+    }
+    res.send({msg:"success"}) // or next() if using react;
+})
 loginRoute.post("/login",loginValidations, async (req:Request, res:Response) => {
     try {
         const errors = validationResult(req);

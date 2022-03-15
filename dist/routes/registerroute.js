@@ -21,6 +21,12 @@ const models_1 = require("../database/models");
 const sendmail_1 = require("../helpers/sendmail");
 const encodedecodetoken_1 = require("../helpers/encodedecodetoken");
 const registerRoute = express_1.default.Router();
+registerRoute.get('/register', registervalidationmiddlewares_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (req.session.userId) {
+        return res.redirect("/profile");
+    }
+    return res.send({ msg: "success" });
+}));
 registerRoute.post('/register', registervalidationmiddlewares_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const errors = (0, express_validator_1.validationResult)(req);

@@ -5,7 +5,14 @@ import { Customer, db, CustomerBalanceslogs, Product } from "../database/models"
 import { SendMail } from "../helpers/sendmail";
 
 const buyProductRoute = express.Router();
-
+buyProductRoute.get("/buyproduct", async (req:Request, res:Response) => {
+    if(!req.session.userId) {
+       return res.redirect("/login");
+    }
+    const customer:any = await Customer.findOne({raw:true, where:{id:req.session.userId}});
+      const {firstName, lastName, email} = customer;
+      res.send({firstName, lastName, email});
+})
 buyProductRoute.post("/buyproduct", async (req: Request, res: Response) => {
    
     let promiseArray:Promise<any>[] = []

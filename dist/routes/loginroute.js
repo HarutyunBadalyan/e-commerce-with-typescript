@@ -18,6 +18,13 @@ const express_validator_1 = require("express-validator");
 const models_1 = require("../database/models");
 const hashandcomparepassword_1 = require("../helpers/hashandcomparepassword");
 const loginRoute = express_1.default.Router();
+loginRoute.get("/login", loginvalidationmiddlewares_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.session);
+    if (req.session.userId) {
+        return res.redirect("/profile");
+    }
+    res.send({ msg: "success" }); // or next() if using react;
+}));
 loginRoute.post("/login", loginvalidationmiddlewares_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const errors = (0, express_validator_1.validationResult)(req);

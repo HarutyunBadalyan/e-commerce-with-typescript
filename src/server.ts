@@ -11,9 +11,9 @@ import { Customer } from "./database/models";
 import loginRoute from "./routes/loginroute";
 import productRoute from "./routes/productroute";
 import buyProductRoute from "./routes/buyproductroute";
+import profileRouter from "./routes/profileroute";
 
 const app:Application = express();
-
 
 const PORT:number = Number(process.env.PORT) || 3000; 
 
@@ -53,5 +53,14 @@ app.use("/",registerRoute);
 app.use("/", loginRoute);
 app.use("/", productRoute)
 app.use("/", buyProductRoute);
-
+app.use("/", profileRouter)
+app.post("/logout", (req: Request, res: Response) => {
+    req.session.destroy((err) => 
+    {
+    if(err){
+        return res.send({msg:"error"})
+    } 
+    return res.send({msg:"success"})
+    });
+})
 app.listen(PORT, () => console.log(`app listen localhost:${PORT}`));

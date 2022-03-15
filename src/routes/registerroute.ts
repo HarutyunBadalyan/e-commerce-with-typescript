@@ -10,6 +10,13 @@ import { SendMail } from "../helpers/sendmail";
 import { TokenEncodeDecode } from "../helpers/encodedecodetoken";
 const registerRoute = express.Router();
 
+registerRoute.get('/register', registerValidations, async (req:Request, res:Response) => {
+   if(req.session.userId) {
+       return res.redirect("/profile")
+   }
+   return res.send({msg:"success"})
+
+})
 
 registerRoute.post('/register', registerValidations, async (req:Request, res:Response) => {
     try {
