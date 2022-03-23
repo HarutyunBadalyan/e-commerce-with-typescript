@@ -1,7 +1,10 @@
 import express, { Request,Response,NextFunction,} from "express";
 
-import { Customer, db, CustomerBalanceslogs, Product } from "../database/models";
-
+import { Customer, db, Product } from "../database/models";
+import Stripe from 'stripe';
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "",{
+    apiVersion: '2020-08-27',
+  });
 import { SendMail } from "../helpers/sendmail";
 
 const buyProductRoute = express.Router();
@@ -21,6 +24,22 @@ buyProductRoute.post("/buyproduct", async (req: Request, res: Response) => {
         if(!req.session.userId) {
             throw "you can't buy"
         }
+        if (!req.body.cardNumber || !req.body.cardExpMonth || !req.body.cardExpYear || !req.body.cardCVC) {
+            return res.status(400).send({
+              Error: "Necessary Card Details are required for One Time Payment",
+            });
+          }
+        const cardToken = await stripe.tokens.create({
+            card: {
+              number: req.body.cardNumber ,
+              exp_month: req.body.cardExpMonth ,
+              exp_year: req.body.cardExpYear ,
+              cvc: req.body.cardCVC ,
+              address_state: req.body.country ,
+              address_zip: req.body.postalCode ,
+            },
+          });
+            
         let sum:number = 0;
         const products:any = await  Product.findAll({
             raw:true,
@@ -34,23 +53,9 @@ buyProductRoute.post("/buyproduct", async (req: Request, res: Response) => {
     transaction = await db.sequelize.transaction();
     console.log("sum products",sum)
     const buyedProductTotalSum: number = sum;
-    const senderBalanceChange = await CustomerBalanceslogs.create({
-        balanceChange:-buyedProductTotalSum,
-        userId: req.session.userId
+    const customer:any = await Customer.findOne({raw:true, where:{ id: req.session.userId}})
+
     
-    },{transaction})
-    console.log("sender",senderBalanceChange)
-    const getterBalanceChange = await CustomerBalanceslogs.create({
-        balanceChange:buyedProductTotalSum,
-        userId: 6,
-    },{transaction})
-    console.log("sender",getterBalanceChange)
-    const [totalsum, metadata] = await db.sequelize.query(`SELECT SUM("balanceChange") FROM public."CustomerBalanceslogs" where "userId" = ${req.session.userId};`);
-    console.log(totalsum, buyedProductTotalSum)
-    if(totalsum[0].sum < buyedProductTotalSum) {
-        throw "not enought money";
-    }
-    console.log(totalsum)
     
     for( let i = 0; i < products.length; i++){
         
@@ -58,20 +63,31 @@ buyProductRoute.post("/buyproduct", async (req: Request, res: Response) => {
       
     }
     const responseOfUpdateProducts = await Promise.all(promiseArray);
-    const customer:any = await Customer.findOne({raw:true, where:{ id: req.session.userId}})
-    await transaction.commit();
+   
+    
     console.log(buyedProductTotalSum)
     let arr = products.map((item:any) => {
         if(req.body.products[req.body.products.findIndex((elem:any) => elem.name ===  item.name)]) {
             return {price: item.price, quantity:req.body.products[req.body.products.findIndex((elem:any) => elem.name ===  item.name)].quantity, name:item.name }
         }
     })
+    const charge = await stripe.charges.create({
+        amount: buyedProductTotalSum * 100,
+        currency: "usd",
+        source: cardToken.id,
+        receipt_email: customer.email,
+        description: `Stripe Charge Of Amount ${buyedProductTotalSum}  ${JSON.stringify(arr)}for One Time Payment`,
+      });
+      await transaction.commit();
     await SendMail.sendEmail(customer.email,"buyedProducts","",`<pre>${JSON.stringify(arr)} totalsum ${buyedProductTotalSum}</pre>` )
     res.send({msg: "success"});
     } catch(err: any) { 
         console.log(err);
         if(transaction) {
             await transaction.rollback();
+         }
+         if(err.type === "StripeCardError") {
+             return res.send({msg:err.raw.decline_code})
          }
         res.send({msg: err})
     }
