@@ -35,4 +35,4 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 const Customer = require("./customer")(sequelize, Sequelize);
 const Product = require("./product")(sequelize, Sequelize);
-module.exports = {Customer, Product, CustomerBalanceslogs, db};
+module.exports = {Customer, Product,  db};
